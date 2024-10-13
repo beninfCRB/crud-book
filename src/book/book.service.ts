@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { UseResponse } from 'src/statics/response.statics';
 import { UseException } from 'src/utils';
 import ResponseData from 'src/utils/response.utils';
-import { Not, Repository } from 'typeorm';
+import { Not } from 'typeorm';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BookService {
   constructor(
-    @InjectRepository(Book) private repo: Repository<Book>
+    private prisma:PrismaService
   ) { }
 
   async create(dto: CreateBookDto) {
     try {
-      const obj = await this.repo.create({
-        ...dto
+      const data = await this.prisma.book.create({
+        data:dto
       })
-
-      const data = await this.repo.save(obj)
 
       return ResponseData(data, UseResponse.Success.Insert)
     } catch (error) {
@@ -37,9 +34,11 @@ export class BookService {
 
   async findAll() {
     try {
-      const data = await this.repo.find({
+      const data = await this.prisma.book.findMany({
         where: {
-          stock: Not(0)
+          NOT:{
+            stock:0
+          }
         }
       })
 
@@ -58,7 +57,7 @@ export class BookService {
 
   async findOne(id: string) {
     try {
-      const data = await this.repo.findOne({
+      const data = await this.prisma.book.findUnique({
         where: {
           id
         }
@@ -79,15 +78,13 @@ export class BookService {
 
   async update(id: string, dto: UpdateBookDto) {
     try {
-      await this.repo.update(id, {
-        ...dto
+      const data = await this.prisma.book.update({
+        where:{
+          id
+        },
+        data:dto
       })
 
-      const data = await this.repo.findOne({
-        where: {
-          id
-        }
-      })
 
       return ResponseData(data, UseResponse.Success.Update)
     } catch (error) {
@@ -104,7 +101,11 @@ export class BookService {
 
   async remove(id: string) {
     try {
-      await this.repo.softDelete(id)
+      await this.prisma.book.delete({
+        where:{
+          id
+        }
+      })
 
       return ResponseData(null, UseResponse.Success.Delete)
     } catch (error) {
