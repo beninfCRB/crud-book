@@ -1,5 +1,4 @@
-import { Borrow } from "src/borrow/entities/borrow.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('books')
 export class Book {
@@ -23,10 +22,4 @@ export class Book {
 
     @UpdateDateColumn()
     updatedAt: Date
-
-    @DeleteDateColumn()
-    deletedAt: Date
-
-    @OneToMany(() => Borrow, (borrow) => borrow.book)
-    borrow: Borrow
 }
