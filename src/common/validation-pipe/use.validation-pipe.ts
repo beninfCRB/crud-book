@@ -1,5 +1,5 @@
 import { ValidationError } from "@nestjs/common";
-import { UseException } from "./exception.utils";
+import { UseException } from "../exceptions/use.exception";
 
 export const ValidationPipeMessage = {
     transform: true,

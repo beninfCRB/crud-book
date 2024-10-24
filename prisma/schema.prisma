@@ -13,12 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Book {
+model Example {
   id        String   @id() @default(uuid())
   code      String   @unique
-  title     String
-  author    String
-  stock     Int
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

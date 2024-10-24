@@ -3,14 +3,20 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { ValidationPipeMessage } from './utils/validation-pipe.utils';
+import { ValidationPipeMessage } from './common/validation-pipe/use.validation-pipe';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+  );
+
+  app.useStaticAssets(join(__dirname, '..', 'public/pages'));
 
   const config = new DocumentBuilder()
-    .setTitle('Books')
-    .setDescription('The Books API description')
+    .setTitle('API')
+    .setDescription('The API description')
     .setVersion('1.0')
     .addTag('cats')
     .build();
@@ -19,6 +25,8 @@ async function bootstrap() {
 
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe(ValidationPipeMessage));
+
+  console.log(`Server is running at port ${process.env.APP_PORT}`);
 
   await app.listen(process.env.APP_PORT);
 }
